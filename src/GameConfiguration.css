@@ -1,0 +1,229 @@
+.game-configuration-screen {
+  min-height: 100svh;
+  padding:
+    max(1.25rem, env(safe-area-inset-top))
+    max(1.25rem, env(safe-area-inset-right))
+    max(1.25rem, env(safe-area-inset-bottom))
+    max(1.25rem, env(safe-area-inset-left));
+}
+
+.configuration-main,
+.configuration-footer {
+  width: min(100%, 42rem);
+  margin-inline: auto;
+}
+
+.configuration-main {
+  padding-top: clamp(2.75rem, 7vh, 5rem);
+}
+
+.configuration-heading {
+  margin-bottom: 2.75rem;
+}
+
+.configuration-heading h1 {
+  margin: 0 0 0.85rem;
+  color: var(--ink);
+  font-size: clamp(2.7rem, 10vw, 4.25rem);
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+}
+
+.configuration-heading > p:not(.eyebrow):not(.player-summary) {
+  max-width: 32rem;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.player-summary {
+  margin: 1.25rem 0 0;
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.player-summary strong {
+  color: var(--accent);
+}
+
+.configuration-form {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.configuration-section {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.configuration-section legend {
+  padding: 0;
+  color: var(--ink);
+  font-size: 1.125rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+.section-intro {
+  margin: 0.45rem 0 1rem;
+  color: var(--muted);
+  font-size: 0.925rem;
+  line-height: 1.5;
+}
+
+.mode-options {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.mode-option,
+.compact-option {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.mode-option input,
+.compact-option input {
+  position: absolute;
+  opacity: 0;
+}
+
+.choice-content,
+.compact-option > span {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background: var(--surface);
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+
+.choice-content {
+  min-height: 5.25rem;
+  padding: 1rem 1.1rem;
+}
+
+.choice-title,
+.choice-description,
+.choice-requirement {
+  display: block;
+}
+
+.choice-title {
+  color: var(--ink);
+  font-weight: 750;
+  letter-spacing: -0.015em;
+}
+
+.choice-description,
+.choice-requirement {
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.choice-requirement {
+  color: var(--accent-hover);
+  font-weight: 700;
+}
+
+.mode-option input:checked + .choice-content,
+.compact-option input:checked + span {
+  border-color: var(--accent);
+  background: #fbebe5;
+}
+
+.mode-option input:focus-visible + .choice-content,
+.compact-option input:focus-visible + span {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.mode-option input:disabled + .choice-content {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.mode-option:has(input:disabled) {
+  cursor: not-allowed;
+}
+
+.compact-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.compact-option > span {
+  min-height: 3.5rem;
+  padding: 0.8rem 0.9rem;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.compact-option.with-description > span {
+  min-height: 4.75rem;
+}
+
+.compact-option strong,
+.compact-option small {
+  display: block;
+}
+
+.compact-option small {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.configuration-footer {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.configuration-notice {
+  margin: 0 0 0.7rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.configuration-notice:empty {
+  display: none;
+}
+
+.configuration-confirmation {
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.configuration-confirmation:empty {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .game-configuration-screen {
+    padding: 2rem;
+  }
+
+  .configuration-main,
+  .configuration-footer {
+    width: min(100%, 48rem);
+  }
+
+  .configuration-main {
+    padding-top: clamp(3.5rem, 9vh, 6rem);
+  }
+
+  .three-up-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

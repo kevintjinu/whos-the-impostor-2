@@ -1,6 +1,4 @@
 .player-setup-screen {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
   min-height: 100svh;
   padding:
     max(1.25rem, env(safe-area-inset-top))
@@ -51,7 +49,7 @@
 }
 
 .setup-main {
-  padding-block: clamp(2.75rem, 7vh, 5rem);
+  padding-top: clamp(2.75rem, 7vh, 5rem);
 }
 
 .setup-heading {
@@ -214,6 +212,7 @@
 }
 
 .setup-footer {
+  margin-top: clamp(1.75rem, 5vh, 3rem);
   padding-top: 1rem;
   border-top: 1px solid var(--line);
 }
@@ -230,17 +229,6 @@
   cursor: not-allowed;
   background: #c9c5bd;
   color: #66645f;
-}
-
-.setup-confirmation {
-  min-height: 1.25rem;
-  margin: 0.7rem 0 0;
-  color: var(--muted);
-  font-size: 0.875rem;
-}
-
-.setup-confirmation:empty {
-  display: none;
 }
 
 .visually-hidden {
@@ -266,7 +254,7 @@
   }
 
   .setup-main {
-    padding-block: clamp(3.5rem, 9vh, 6rem);
+    padding-top: clamp(3.5rem, 9vh, 6rem);
   }
 
   .player-form {

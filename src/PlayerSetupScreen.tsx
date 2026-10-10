@@ -12,16 +12,16 @@ import './PlayerSetup.css'
 type PlayerSetupScreenProps = {
   players: Player[]
   onBack: () => void
+  onContinue: () => void
   onPlayersChange: (players: Player[]) => void
 }
 
-function PlayerSetupScreen({ players, onBack, onPlayersChange }: PlayerSetupScreenProps) {
+function PlayerSetupScreen({ players, onBack, onContinue, onPlayersChange }: PlayerSetupScreenProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const [draftName, setDraftName] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [fieldError, setFieldError] = useState('')
-  const [confirmation, setConfirmation] = useState('')
 
   const editingPlayer = players.find((player) => player.id === editingId)
   const playerCountLabel = `${players.length} of ${MAX_PLAYERS} players`
@@ -35,7 +35,6 @@ function PlayerSetupScreen({ players, onBack, onPlayersChange }: PlayerSetupScre
 
   const clearMessages = () => {
     setFieldError('')
-    setConfirmation('')
   }
 
   const resetEditor = () => {
@@ -87,14 +86,6 @@ function PlayerSetupScreen({ players, onBack, onPlayersChange }: PlayerSetupScre
       resetEditor()
     }
     clearMessages()
-  }
-
-  const handleContinue = () => {
-    if (!canContinue) {
-      return
-    }
-
-    setConfirmation('Game configuration is coming next.')
   }
 
   const handleNameKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -149,7 +140,6 @@ function PlayerSetupScreen({ players, onBack, onPlayersChange }: PlayerSetupScre
               onChange={(event) => {
                 setDraftName(event.target.value)
                 setFieldError('')
-                setConfirmation('')
               }}
               placeholder="Enter a name"
               autoComplete="off"
@@ -209,13 +199,10 @@ function PlayerSetupScreen({ players, onBack, onPlayersChange }: PlayerSetupScre
 
       <footer className="setup-footer">
         <p className="minimum-note">{canContinue ? 'Ready when you are.' : `Add ${MIN_PLAYERS - players.length} more to continue.`}</p>
-        <button className="button button-primary continue-button" type="button" disabled={!canContinue} onClick={handleContinue}>
+        <button className="button button-primary continue-button" type="button" disabled={!canContinue} onClick={onContinue}>
           Continue
           <span aria-hidden="true">→</span>
         </button>
-        <p className="setup-confirmation" role="status" aria-live="polite">
-          {confirmation}
-        </p>
       </footer>
     </div>
   )
