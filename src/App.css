@@ -151,16 +151,6 @@
   border-color: var(--ink);
 }
 
-.home-screen .start-status {
-  margin: 1rem 0 0;
-  color: var(--muted);
-  font-size: 0.875rem;
-}
-
-.start-status:empty {
-  display: none;
-}
-
 .home-footer {
   display: flex;
   flex-wrap: wrap;

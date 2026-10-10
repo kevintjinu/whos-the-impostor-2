@@ -1,12 +1,11 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 
-function HomeScreen() {
+type HomeScreenProps = {
+  onStartGame: () => void
+}
+
+function HomeScreen({ onStartGame }: HomeScreenProps) {
   const rulesDialogRef = useRef<HTMLDialogElement>(null)
-  const [startMessage, setStartMessage] = useState('')
-
-  const handleStartGame = () => {
-    setStartMessage('Player setup is coming soon.')
-  }
 
   const openRules = () => {
     rulesDialogRef.current?.showModal()
@@ -40,8 +39,7 @@ function HomeScreen() {
           <button
             className="button button-primary"
             type="button"
-            aria-describedby={startMessage ? 'start-status' : undefined}
-            onClick={handleStartGame}
+            onClick={onStartGame}
           >
             Start Game
             <span aria-hidden="true">→</span>
@@ -50,9 +48,6 @@ function HomeScreen() {
             How to Play
           </button>
         </div>
-        <p className="start-status" id="start-status" role="status" aria-live="polite">
-          {startMessage}
-        </p>
       </main>
 
       <footer aria-label="Game summary">
