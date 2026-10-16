@@ -2,81 +2,140 @@ import type { Category } from './settings'
 
 export type WordCategory = Exclude<Category, 'mixed'>
 
+const CHAOS_DECOY_POOLS = {
+  space: ['Telescope', 'Rocket', 'Planet', 'Astronaut', 'Comet', 'Satellite', 'Spacesuit', 'Moon Rock'],
+  music: ['Violin', 'Trumpet', 'Saxophone', 'Banjo', 'Tambourine', 'Harmonica', 'Microphone', 'Orchestra'],
+  construction: ['Bulldozer', 'Tower Crane', 'Cement Mixer', 'Hard Hat', 'Brick Wall', 'Jackhammer', 'Wheelbarrow', 'Traffic Cone'],
+  technology: ['Calculator', 'Printer', 'Keyboard', 'Computer Mouse', 'Projector', 'Photocopier', 'USB Cable', 'Webcam'],
+  arctic: ['Glacier', 'Igloo', 'Snowmobile', 'Iceberg', 'Sled', 'Snowflake', 'Ski Lift', 'Polar Station'],
+  farmyard: ['Tractor', 'Hay Bale', 'Scarecrow', 'Barn', 'Windmill', 'Pitchfork', 'Grain Silo', 'Farm Gate'],
+  nautical: ['Anchor', 'Lifeboat', 'Lighthouse', 'Submarine', 'Sailboat', 'Diving Mask', 'Buoy', 'Shipwreck'],
+  carnival: ['Ferris Wheel', 'Roller Coaster', 'Carousel', 'Clown', 'Ticket Booth', 'Bumper Car', 'Cotton Candy', 'Funhouse'],
+  garden: ['Watering Can', 'Flowerpot', 'Garden Hose', 'Sunflower', 'Lawn Mower', 'Greenhouse', 'Birdbath', 'Garden Gnome'],
+  royal: ['Castle', 'Crown', 'Throne', 'Knight', 'Dragon', 'Drawbridge', 'Royal Carriage', 'Treasure Chest'],
+  science: ['Microscope', 'Test Tube', 'Laboratory Coat', 'Magnet', 'Beaker', 'Robot Arm', 'Safety Goggles', 'Chemistry Set'],
+  travel: ['Passport', 'Boarding Pass', 'Map', 'Compass', 'Postcard', 'Luggage Tag', 'Travel Pillow', 'Souvenir'],
+} as const
+
+export type ChaosPoolId = keyof typeof CHAOS_DECOY_POOLS
+
+type WordGroup = {
+  id: string
+  category: WordCategory
+  words: readonly [string, string, string, string, string]
+  chaosPool: ChaosPoolId
+}
+
 export type WordEntry = {
   id: string
   category: WordCategory
+  semanticGroupId: string
   majority: string
-  relatedDecoy: string
-  unrelatedDecoy: string
+  relatedDecoys: readonly string[]
+  chaosDecoys: readonly string[]
 }
 
-export const WORD_BANK: readonly WordEntry[] = [
-  { id: 'everyday-umbrella', category: 'everyday-things', majority: 'Umbrella', relatedDecoy: 'Raincoat', unrelatedDecoy: 'Telescope' },
-  { id: 'everyday-toothbrush', category: 'everyday-things', majority: 'Toothbrush', relatedDecoy: 'Toothpaste', unrelatedDecoy: 'Compass' },
-  { id: 'everyday-backpack', category: 'everyday-things', majority: 'Backpack', relatedDecoy: 'Suitcase', unrelatedDecoy: 'Frying Pan' },
-  { id: 'everyday-alarm-clock', category: 'everyday-things', majority: 'Alarm Clock', relatedDecoy: 'Timer', unrelatedDecoy: 'Paintbrush' },
-  { id: 'everyday-key', category: 'everyday-things', majority: 'Key', relatedDecoy: 'Lock', unrelatedDecoy: 'Pillow' },
-  { id: 'everyday-notebook', category: 'everyday-things', majority: 'Notebook', relatedDecoy: 'Sketchbook', unrelatedDecoy: 'Kettle' },
-  { id: 'everyday-mirror', category: 'everyday-things', majority: 'Mirror', relatedDecoy: 'Window', unrelatedDecoy: 'Sandwich' },
-  { id: 'everyday-scissors', category: 'everyday-things', majority: 'Scissors', relatedDecoy: 'Craft Knife', unrelatedDecoy: 'Slippers' },
-  { id: 'everyday-flashlight', category: 'everyday-things', majority: 'Flashlight', relatedDecoy: 'Lantern', unrelatedDecoy: 'Teacup' },
-  { id: 'everyday-vacuum', category: 'everyday-things', majority: 'Vacuum Cleaner', relatedDecoy: 'Broom', unrelatedDecoy: 'Sunglasses' },
+export const WORD_GROUPS: readonly WordGroup[] = [
+  // Everyday Things
+  { id: 'everyday-weather-gear', category: 'everyday-things', words: ['Umbrella', 'Raincoat', 'Rubber Boots', 'Poncho', 'Windbreaker'], chaosPool: 'science' },
+  { id: 'everyday-writing-tools', category: 'everyday-things', words: ['Pencil', 'Pen', 'Marker', 'Crayon', 'Highlighter'], chaosPool: 'nautical' },
+  { id: 'everyday-seating', category: 'everyday-things', words: ['Chair', 'Stool', 'Bench', 'Armchair', 'Beanbag'], chaosPool: 'space' },
+  { id: 'everyday-bags', category: 'everyday-things', words: ['Backpack', 'Suitcase', 'Handbag', 'Briefcase', 'Duffle Bag'], chaosPool: 'garden' },
+  { id: 'everyday-cleaning', category: 'everyday-things', words: ['Broom', 'Mop', 'Vacuum Cleaner', 'Duster', 'Sponge'], chaosPool: 'royal' },
+  { id: 'everyday-kitchen-tools', category: 'everyday-things', words: ['Frying Pan', 'Saucepan', 'Baking Tray', 'Mixing Bowl', 'Cutting Board'], chaosPool: 'arctic' },
+  { id: 'everyday-timepieces', category: 'everyday-things', words: ['Alarm Clock', 'Wristwatch', 'Stopwatch', 'Kitchen Timer', 'Wall Clock'], chaosPool: 'farmyard' },
+  { id: 'everyday-lighting', category: 'everyday-things', words: ['Flashlight', 'Lantern', 'Desk Lamp', 'Candle', 'Night-light'], chaosPool: 'science' },
+  { id: 'everyday-grooming', category: 'everyday-things', words: ['Toothbrush', 'Hairbrush', 'Comb', 'Razor', 'Nail Clippers'], chaosPool: 'carnival' },
+  { id: 'everyday-paper-goods', category: 'everyday-things', words: ['Notebook', 'Sketchbook', 'Calendar', 'Envelope', 'Sticky Note'], chaosPool: 'music' },
 
-  { id: 'food-pizza', category: 'food-and-drink', majority: 'Pizza', relatedDecoy: 'Flatbread', unrelatedDecoy: 'Watermelon' },
-  { id: 'food-coffee', category: 'food-and-drink', majority: 'Coffee', relatedDecoy: 'Espresso', unrelatedDecoy: 'Sushi' },
-  { id: 'food-pancakes', category: 'food-and-drink', majority: 'Pancakes', relatedDecoy: 'Waffles', unrelatedDecoy: 'Broccoli' },
-  { id: 'food-ice-cream', category: 'food-and-drink', majority: 'Ice Cream', relatedDecoy: 'Gelato', unrelatedDecoy: 'Garlic' },
-  { id: 'food-burger', category: 'food-and-drink', majority: 'Burger', relatedDecoy: 'Sandwich', unrelatedDecoy: 'Pineapple' },
-  { id: 'food-sushi', category: 'food-and-drink', majority: 'Sushi', relatedDecoy: 'Sashimi', unrelatedDecoy: 'Hot Chocolate' },
-  { id: 'food-popcorn', category: 'food-and-drink', majority: 'Popcorn', relatedDecoy: 'Potato Chips', unrelatedDecoy: 'Tomato Soup' },
-  { id: 'food-croissant', category: 'food-and-drink', majority: 'Croissant', relatedDecoy: 'Danish', unrelatedDecoy: 'Curry' },
-  { id: 'food-lemonade', category: 'food-and-drink', majority: 'Lemonade', relatedDecoy: 'Iced Tea', unrelatedDecoy: 'Spaghetti' },
-  { id: 'food-cheesecake', category: 'food-and-drink', majority: 'Cheesecake', relatedDecoy: 'Tiramisu', unrelatedDecoy: 'Pickles' },
+  // Food & Drink
+  { id: 'food-breads', category: 'food-and-drink', words: ['Baguette', 'Croissant', 'Bagel', 'Pretzel', 'Tortilla'], chaosPool: 'space' },
+  { id: 'food-hot-drinks', category: 'food-and-drink', words: ['Coffee', 'Tea', 'Hot Chocolate', 'Espresso', 'Chai'], chaosPool: 'construction' },
+  { id: 'food-breakfast', category: 'food-and-drink', words: ['Pancakes', 'Waffles', 'Cereal', 'Oatmeal', 'French Toast'], chaosPool: 'technology' },
+  { id: 'food-frozen-desserts', category: 'food-and-drink', words: ['Ice Cream', 'Gelato', 'Sorbet', 'Frozen Yogurt', 'Ice Pop'], chaosPool: 'royal' },
+  { id: 'food-handheld-meals', category: 'food-and-drink', words: ['Burger', 'Hot Dog', 'Taco', 'Burrito', 'Sandwich'], chaosPool: 'arctic' },
+  { id: 'food-asian-dishes', category: 'food-and-drink', words: ['Sushi', 'Dumplings', 'Noodles', 'Fried Rice', 'Spring Roll'], chaosPool: 'royal' },
+  { id: 'food-snacks', category: 'food-and-drink', words: ['Popcorn', 'Potato Chips', 'Crackers', 'Nachos', 'Trail Mix'], chaosPool: 'nautical' },
+  { id: 'food-fruit', category: 'food-and-drink', words: ['Apple', 'Banana', 'Orange', 'Mango', 'Watermelon'], chaosPool: 'music' },
+  { id: 'food-baked-desserts', category: 'food-and-drink', words: ['Cheesecake', 'Brownie', 'Cupcake', 'Doughnut', 'Cookie'], chaosPool: 'science' },
+  { id: 'food-soups', category: 'food-and-drink', words: ['Tomato Soup', 'Chicken Soup', 'Pumpkin Soup', 'Miso Soup', 'Lentil Soup'], chaosPool: 'travel' },
 
-  { id: 'places-airport', category: 'places', majority: 'Airport', relatedDecoy: 'Train Station', unrelatedDecoy: 'Aquarium' },
-  { id: 'places-library', category: 'places', majority: 'Library', relatedDecoy: 'Bookshop', unrelatedDecoy: 'Volcano' },
-  { id: 'places-hospital', category: 'places', majority: 'Hospital', relatedDecoy: 'Medical Clinic', unrelatedDecoy: 'Amusement Park' },
-  { id: 'places-beach', category: 'places', majority: 'Beach', relatedDecoy: 'Swimming Pool', unrelatedDecoy: 'Museum' },
-  { id: 'places-hotel', category: 'places', majority: 'Hotel', relatedDecoy: 'Hostel', unrelatedDecoy: 'Farm' },
-  { id: 'places-cinema', category: 'places', majority: 'Cinema', relatedDecoy: 'Theatre', unrelatedDecoy: 'Desert' },
-  { id: 'places-supermarket', category: 'places', majority: 'Supermarket', relatedDecoy: 'Farmers Market', unrelatedDecoy: 'Lighthouse' },
-  { id: 'places-school', category: 'places', majority: 'School', relatedDecoy: 'University', unrelatedDecoy: 'Waterfall' },
-  { id: 'places-restaurant', category: 'places', majority: 'Restaurant', relatedDecoy: 'Cafe', unrelatedDecoy: 'Observatory' },
-  { id: 'places-stadium', category: 'places', majority: 'Stadium', relatedDecoy: 'Arena', unrelatedDecoy: 'Bakery' },
+  // Places
+  { id: 'places-transport-hubs', category: 'places', words: ['Airport', 'Train Station', 'Bus Station', 'Ferry Terminal', 'Subway Station'], chaosPool: 'garden' },
+  { id: 'places-learning', category: 'places', words: ['School', 'University', 'Library', 'Museum', 'Science Centre'], chaosPool: 'farmyard' },
+  { id: 'places-health', category: 'places', words: ['Hospital', 'Medical Clinic', 'Pharmacy', 'Dentist', 'Veterinary Clinic'], chaosPool: 'music' },
+  { id: 'places-lodging', category: 'places', words: ['Hotel', 'Hostel', 'Resort', 'Campsite', 'Holiday Cabin'], chaosPool: 'technology' },
+  { id: 'places-shopping', category: 'places', words: ['Supermarket', 'Shopping Mall', 'Farmers Market', 'Department Store', 'Corner Shop'], chaosPool: 'arctic' },
+  { id: 'places-food-venues', category: 'places', words: ['Restaurant', 'Cafe', 'Bakery', 'Food Court', 'Diner'], chaosPool: 'space' },
+  { id: 'places-entertainment-venues', category: 'places', words: ['Cinema', 'Theatre', 'Concert Hall', 'Comedy Club', 'Arcade'], chaosPool: 'farmyard' },
+  { id: 'places-sports-venues', category: 'places', words: ['Stadium', 'Arena', 'Swimming Pool', 'Gym', 'Tennis Court'], chaosPool: 'science' },
+  { id: 'places-natural-landmarks', category: 'places', words: ['Beach', 'Forest', 'Desert', 'Waterfall', 'Volcano'], chaosPool: 'technology' },
+  { id: 'places-civic', category: 'places', words: ['Police Station', 'Fire Station', 'Post Office', 'Town Hall', 'Courthouse'], chaosPool: 'nautical' },
 
-  { id: 'nature-dolphin', category: 'animals-and-nature', majority: 'Dolphin', relatedDecoy: 'Whale', unrelatedDecoy: 'Cactus' },
-  { id: 'nature-lion', category: 'animals-and-nature', majority: 'Lion', relatedDecoy: 'Tiger', unrelatedDecoy: 'Mushroom' },
-  { id: 'nature-penguin', category: 'animals-and-nature', majority: 'Penguin', relatedDecoy: 'Puffin', unrelatedDecoy: 'Rose' },
-  { id: 'nature-butterfly', category: 'animals-and-nature', majority: 'Butterfly', relatedDecoy: 'Moth', unrelatedDecoy: 'Oak Tree' },
-  { id: 'nature-frog', category: 'animals-and-nature', majority: 'Frog', relatedDecoy: 'Toad', unrelatedDecoy: 'Sunflower' },
-  { id: 'nature-eagle', category: 'animals-and-nature', majority: 'Eagle', relatedDecoy: 'Hawk', unrelatedDecoy: 'Coral' },
-  { id: 'nature-rabbit', category: 'animals-and-nature', majority: 'Rabbit', relatedDecoy: 'Hare', unrelatedDecoy: 'Thunderstorm' },
-  { id: 'nature-octopus', category: 'animals-and-nature', majority: 'Octopus', relatedDecoy: 'Squid', unrelatedDecoy: 'Pine Tree' },
-  { id: 'nature-bee', category: 'animals-and-nature', majority: 'Bee', relatedDecoy: 'Wasp', unrelatedDecoy: 'Glacier' },
-  { id: 'nature-crocodile', category: 'animals-and-nature', majority: 'Crocodile', relatedDecoy: 'Alligator', unrelatedDecoy: 'Daisy' },
+  // Animals & Nature
+  { id: 'nature-big-cats', category: 'animals-and-nature', words: ['Lion', 'Tiger', 'Leopard', 'Cheetah', 'Jaguar'], chaosPool: 'technology' },
+  { id: 'nature-marine-mammals', category: 'animals-and-nature', words: ['Dolphin', 'Whale', 'Seal', 'Sea Lion', 'Manatee'], chaosPool: 'construction' },
+  { id: 'nature-birds-of-prey', category: 'animals-and-nature', words: ['Eagle', 'Hawk', 'Falcon', 'Owl', 'Vulture'], chaosPool: 'carnival' },
+  { id: 'nature-small-pets', category: 'animals-and-nature', words: ['Rabbit', 'Hamster', 'Guinea Pig', 'Gerbil', 'Mouse'], chaosPool: 'space' },
+  { id: 'nature-farm-animals', category: 'animals-and-nature', words: ['Cow', 'Pig', 'Sheep', 'Goat', 'Horse'], chaosPool: 'music' },
+  { id: 'nature-reptiles', category: 'animals-and-nature', words: ['Crocodile', 'Alligator', 'Lizard', 'Snake', 'Turtle'], chaosPool: 'travel' },
+  { id: 'nature-insects', category: 'animals-and-nature', words: ['Bee', 'Wasp', 'Butterfly', 'Moth', 'Dragonfly'], chaosPool: 'nautical' },
+  { id: 'nature-sea-creatures', category: 'animals-and-nature', words: ['Octopus', 'Squid', 'Jellyfish', 'Starfish', 'Seahorse'], chaosPool: 'garden' },
+  { id: 'nature-trees', category: 'animals-and-nature', words: ['Oak Tree', 'Pine Tree', 'Palm Tree', 'Maple Tree', 'Willow Tree'], chaosPool: 'carnival' },
+  { id: 'nature-weather', category: 'animals-and-nature', words: ['Thunderstorm', 'Tornado', 'Blizzard', 'Rainbow', 'Fog'], chaosPool: 'technology' },
 
-  { id: 'activities-cycling', category: 'activities', majority: 'Cycling', relatedDecoy: 'Skateboarding', unrelatedDecoy: 'Knitting' },
-  { id: 'activities-baking', category: 'activities', majority: 'Baking', relatedDecoy: 'Cooking', unrelatedDecoy: 'Surfing' },
-  { id: 'activities-hiking', category: 'activities', majority: 'Hiking', relatedDecoy: 'Camping', unrelatedDecoy: 'Karaoke' },
-  { id: 'activities-painting', category: 'activities', majority: 'Painting', relatedDecoy: 'Drawing', unrelatedDecoy: 'Football' },
-  { id: 'activities-swimming', category: 'activities', majority: 'Swimming', relatedDecoy: 'Diving', unrelatedDecoy: 'Chess' },
-  { id: 'activities-dancing', category: 'activities', majority: 'Dancing', relatedDecoy: 'Gymnastics', unrelatedDecoy: 'Gardening' },
-  { id: 'activities-reading', category: 'activities', majority: 'Reading', relatedDecoy: 'Writing', unrelatedDecoy: 'Rock Climbing' },
-  { id: 'activities-fishing', category: 'activities', majority: 'Fishing', relatedDecoy: 'Boating', unrelatedDecoy: 'Yoga' },
-  { id: 'activities-photography', category: 'activities', majority: 'Photography', relatedDecoy: 'Filmmaking', unrelatedDecoy: 'Jogging' },
-  { id: 'activities-singing', category: 'activities', majority: 'Singing', relatedDecoy: 'Playing Guitar', unrelatedDecoy: 'Pottery' },
+  // Activities
+  { id: 'activities-cardio', category: 'activities', words: ['Running', 'Jogging', 'Cycling', 'Swimming', 'Rowing'], chaosPool: 'royal' },
+  { id: 'activities-outdoors', category: 'activities', words: ['Hiking', 'Camping', 'Fishing', 'Kayaking', 'Rock Climbing'], chaosPool: 'technology' },
+  { id: 'activities-visual-arts', category: 'activities', words: ['Painting', 'Drawing', 'Photography', 'Sculpting', 'Pottery'], chaosPool: 'arctic' },
+  { id: 'activities-music-making', category: 'activities', words: ['Singing', 'Playing Guitar', 'Playing Piano', 'Drumming', 'DJing'], chaosPool: 'garden' },
+  { id: 'activities-dance', category: 'activities', words: ['Ballet', 'Salsa', 'Hip-hop Dancing', 'Ballroom Dancing', 'Tap Dancing'], chaosPool: 'nautical' },
+  { id: 'activities-racket-sports', category: 'activities', words: ['Tennis', 'Badminton', 'Table Tennis', 'Squash', 'Pickleball'], chaosPool: 'farmyard' },
+  { id: 'activities-team-sports', category: 'activities', words: ['Football', 'Basketball', 'Volleyball', 'Rugby', 'Hockey'], chaosPool: 'space' },
+  { id: 'activities-quiet-hobbies', category: 'activities', words: ['Reading', 'Writing', 'Knitting', 'Crossword Puzzles', 'Jigsaw Puzzles'], chaosPool: 'construction' },
+  { id: 'activities-kitchen', category: 'activities', words: ['Baking', 'Cooking', 'Barbecuing', 'Cake Decorating', 'Making Cocktails'], chaosPool: 'travel' },
+  { id: 'activities-social', category: 'activities', words: ['Karaoke', 'Bowling', 'Mini Golf', 'Escape Room', 'Trivia Night'], chaosPool: 'arctic' },
 
-  { id: 'entertainment-detective-film', category: 'entertainment', majority: 'Detective Film', relatedDecoy: 'Crime Novel', unrelatedDecoy: 'Dance Competition' },
-  { id: 'entertainment-superhero-movie', category: 'entertainment', majority: 'Superhero Movie', relatedDecoy: 'Comic Book', unrelatedDecoy: 'Cooking Show' },
-  { id: 'entertainment-quiz-show', category: 'entertainment', majority: 'Quiz Show', relatedDecoy: 'Trivia Game', unrelatedDecoy: 'Jazz Concert' },
-  { id: 'entertainment-board-game', category: 'entertainment', majority: 'Board Game', relatedDecoy: 'Card Game', unrelatedDecoy: 'Nature Documentary' },
-  { id: 'entertainment-sitcom', category: 'entertainment', majority: 'Sitcom', relatedDecoy: 'Comedy Film', unrelatedDecoy: 'Puzzle Game' },
-  { id: 'entertainment-musical', category: 'entertainment', majority: 'Musical', relatedDecoy: 'Opera', unrelatedDecoy: 'Racing Game' },
-  { id: 'entertainment-podcast', category: 'entertainment', majority: 'Podcast', relatedDecoy: 'Radio Show', unrelatedDecoy: 'Animated Film' },
-  { id: 'entertainment-fantasy-novel', category: 'entertainment', majority: 'Fantasy Novel', relatedDecoy: 'Adventure Film', unrelatedDecoy: 'Reality Dating Show' },
-  { id: 'entertainment-video-game', category: 'entertainment', majority: 'Video Game', relatedDecoy: 'Arcade Game', unrelatedDecoy: 'Poetry Reading' },
-  { id: 'entertainment-magic-show', category: 'entertainment', majority: 'Magic Show', relatedDecoy: 'Circus', unrelatedDecoy: 'Historical Drama' },
+  // Entertainment
+  { id: 'entertainment-film-genres', category: 'entertainment', words: ['Comedy Film', 'Horror Film', 'Action Film', 'Romance Film', 'Animated Film'], chaosPool: 'farmyard' },
+  { id: 'entertainment-tv-genres', category: 'entertainment', words: ['Sitcom', 'Reality Show', 'Quiz Show', 'Crime Drama', 'Nature Documentary'], chaosPool: 'garden' },
+  { id: 'entertainment-books', category: 'entertainment', words: ['Fantasy Novel', 'Mystery Novel', 'Romance Novel', 'Comic Book', 'Biography'], chaosPool: 'nautical' },
+  { id: 'entertainment-live-music', category: 'entertainment', words: ['Pop Concert', 'Rock Concert', 'Jazz Concert', 'Classical Concert', 'Music Festival'], chaosPool: 'construction' },
+  { id: 'entertainment-tabletop-games', category: 'entertainment', words: ['Board Game', 'Card Game', 'Chess', 'Charades', 'Dominoes'], chaosPool: 'arctic' },
+  { id: 'entertainment-video-games', category: 'entertainment', words: ['Racing Game', 'Puzzle Game', 'Adventure Game', 'Sports Game', 'Platform Game'], chaosPool: 'garden' },
+  { id: 'entertainment-stage-shows', category: 'entertainment', words: ['Musical', 'Opera', 'Stand-up Comedy', 'Magic Show', 'Stage Play'], chaosPool: 'science' },
+  { id: 'entertainment-audio', category: 'entertainment', words: ['Podcast', 'Radio Show', 'Audiobook', 'News Bulletin', 'Talk Show'], chaosPool: 'royal' },
+  { id: 'entertainment-public-shows', category: 'entertainment', words: ['Puppet Show', 'Fireworks Display', 'Talent Show', 'Parade', 'Street Performance'], chaosPool: 'technology' },
+  { id: 'entertainment-characters', category: 'entertainment', words: ['Superhero', 'Detective', 'Pirate', 'Wizard', 'Robot'], chaosPool: 'arctic' },
 ]
+
+function slugify(value: string) {
+  return value
+    .toLocaleLowerCase('en')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+export const WORD_BANK: readonly WordEntry[] = WORD_GROUPS.flatMap((group) =>
+  group.words.map((majority) => ({
+    id: `${group.id}-${slugify(majority)}`,
+    category: group.category,
+    semanticGroupId: group.id,
+    majority,
+    relatedDecoys: group.words.filter((word) => word !== majority),
+    chaosDecoys: CHAOS_DECOY_POOLS[group.chaosPool],
+  })),
+)
+
+export function normaliseWord(value: string) {
+  return value
+    .normalize('NFKD')
+    .toLocaleLowerCase('en')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ')
+}
 
 export function getWordPool(category: Category): readonly WordEntry[] {
   if (category === 'mixed') {

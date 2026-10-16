@@ -1,18 +1,25 @@
 # Round engine notes
 
-The engine keeps role assignment and word selection outside React. `createRound` accepts the current players, validated settings, session history and an injectable random source. Production calls use `crypto.getRandomValues`; tests inject fixed sequences.
+The engine keeps role assignment and word selection outside React. `createRound` accepts the current players, validated settings, session history and an injectable random source. Production calls use `crypto.getRandomValues`; tests inject fixed sequences of unsigned 32-bit integers (0 through 0xffffffff). There is no insecure fallback.
 
-## Fairness
+## Independent role selection
 
-- Impostors are chosen from the players with the fewest previous impostor turns. Random choice within that least-assigned tier prevents a fixed rotation. Double Trouble repeats this process without replacement, so the two IDs are always distinct.
-- The first clue player is chosen independently using a separate count map and a separate random draw. A player may legitimately be both the impostor and first clue giver.
-- This is count-balancing, not a guarantee about short-term ordering. With equal counts, cryptographic randomness may select a recently used player.
+- Every single-impostor draw samples the entire roster uniformly, giving each player probability 1/N regardless of position or history. Consecutive selections are valid; no balancing or rotation is enforced.
+- Double Trouble draws uniformly without replacement. Each ordered pair has probability 1/(N × (N−1)), so each unordered pair has probability 2/(N × (N−1)). Both impostors still share the same decoy.
+- The first clue player is selected independently from the entire roster with a separate draw. A player may be both the impostor and first clue giver.
+- Historical impostor and starting counts are retained for information only and do not affect selection.
+- Bounded choices use rejection sampling: discard the incomplete tail of the 2^32 range before taking the remainder. This avoids modulo bias. The same sampler chooses among eligible words and decoys.
+- Round creation runs only from the guarded Configuration action. React renders, private reveals and shared-screen navigation reuse the saved round and never draw again.
+
+Checkpoints 01–05 are approved and locked. Checkpoint 05 was committed as `8e68341ecfc764109d1b292341d659af30e0f223`. Independent role selection is a separately authorized correction to the former count-balancing policy.
 
 ## Words
 
-The initial bank contains ten hand-curated entries for each concrete category. Every entry has one majority word, a related Close Call decoy and an unrelated Chaos/Double Trouble decoy. Mixed selects across all concrete categories. Used majority entry IDs are excluded for the session; an exhausted requested pool returns an explicit error instead of repeating a word or changing category.
+The offline bank contains 300 distinct majority words: 50 in each of the six concrete categories. Each entry belongs to a curated five-word semantic group, making the other four words eligible Close Call decoys. Each group also names an explicitly reviewed Chaos pool with eight unrelated candidates. Chaos and Double Trouble use those unrelated candidates; both Double Trouble impostors receive the one decoy selected for that round. No Clue never selects or exposes a decoy. Mixed selects from all 300 entries.
 
-This is a checkpoint-sized starter dataset, not the final production word library. Relationship quality should receive ongoing editorial review as the library grows.
+Majority entry IDs are excluded until the selected category pool is exhausted. At exhaustion, only that pool's used IDs are cleared, then its full pool becomes eligible again; selecting a concrete category never silently falls through to another category. For Mixed, recycling happens after all 300 entries have been used.
+
+Decoy selection first prefers candidate words not yet used as decoys in the session. If every eligible candidate word has appeared, it prefers majority/mode/decoy pairings not yet used. Once every pairing for that majority and mode has appeared, those pairing records are cleared and the candidate set is recycled. Selection within every eligible set remains cryptographically random. Normalized duplicate candidates and candidates identical to the majority are rejected; an entry with no valid candidate produces an explicit engine error.
 
 ## Public clue phase
 

@@ -53,3 +53,20 @@ a:focus-visible {
 #root {
   min-height: 100svh;
 }
+
+@media (max-width: 24rem) {
+  .setup-header,
+  .reveal-header,
+  .clue-header {
+    align-items: flex-start;
+  }
+
+  .setup-header .brand,
+  .reveal-header .brand,
+  .clue-header .brand {
+    min-width: 0;
+    justify-content: flex-end;
+    text-align: right;
+    white-space: normal;
+  }
+}

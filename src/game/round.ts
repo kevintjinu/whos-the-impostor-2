@@ -1,14 +1,19 @@
 import { MAX_PLAYERS, MIN_PLAYERS, type Player } from './players'
 import { isGameSettingsValid, type GameMode, type GameSettings } from './settings'
-import { getWordPool, type WordCategory, type WordEntry } from './wordBank'
+import { getWordPool, normaliseWord, type WordCategory, type WordEntry } from './wordBank'
 
+// Returns an unsigned 32-bit integer, including both 0 and 0xffffffff.
 export type RandomSource = () => number
+
+const UINT32_RANGE = 0x1_0000_0000
 
 export type AssignmentHistory = {
   roundsCreated: number
   impostorTurns: Record<string, number>
   startingTurns: Record<string, number>
   usedMajorityWordIds: string[]
+  usedDecoyWords: string[]
+  usedDecoyPairKeys: string[]
 }
 
 export type PrivateRole = {
@@ -39,6 +44,7 @@ export type RoundCreationErrorCode =
   | 'INVALID_PLAYERS'
   | 'INVALID_SETTINGS'
   | 'WORD_POOL_EXHAUSTED'
+  | 'INVALID_WORD_ENTRY'
   | 'INVALID_RANDOM_SOURCE'
 
 export class RoundCreationError extends Error {
@@ -57,13 +63,22 @@ export function createAssignmentHistory(): AssignmentHistory {
     impostorTurns: {},
     startingTurns: {},
     usedMajorityWordIds: [],
+    usedDecoyWords: [],
+    usedDecoyPairKeys: [],
   }
 }
 
 export function secureRandom(): number {
+  if (typeof globalThis.crypto?.getRandomValues !== 'function') {
+    throw new RoundCreationError(
+      'INVALID_RANDOM_SOURCE',
+      'Cryptographically secure randomness is unavailable in this browser.',
+    )
+  }
+
   const values = new Uint32Array(1)
-  crypto.getRandomValues(values)
-  return values[0] / 0x1_0000_0000
+  globalThis.crypto.getRandomValues(values)
+  return values[0]
 }
 
 function validatePlayers(players: readonly Player[]) {
@@ -80,25 +95,34 @@ function validatePlayers(players: readonly Player[]) {
   }
 }
 
-function randomIndex(length: number, random: RandomSource) {
-  const value = random()
-  if (!Number.isFinite(value) || value < 0 || value >= 1) {
-    throw new RoundCreationError(
-      'INVALID_RANDOM_SOURCE',
-      'The random source must return a number from 0 up to, but not including, 1.',
-    )
+export function randomIndex(length: number, random: RandomSource = secureRandom): number {
+  if (!Number.isInteger(length) || length < 1 || length > UINT32_RANGE) {
+    throw new RangeError('The random bound must be an integer from 1 through 2^32.')
   }
 
-  return Math.floor(value * length)
+  // Only accept a range containing an equal number of values for every index.
+  const limit = UINT32_RANGE - (UINT32_RANGE % length)
+  let value: number
+
+  do {
+    value = random()
+    if (!Number.isInteger(value) || value < 0 || value >= UINT32_RANGE) {
+      throw new RoundCreationError(
+        'INVALID_RANDOM_SOURCE',
+        'The random source must return an unsigned 32-bit integer.',
+      )
+    }
+  } while (value >= limit)
+
+  return value % length
 }
 
 function pickRandom<Item>(items: readonly Item[], random: RandomSource): Item {
   return items[randomIndex(items.length, random)]
 }
 
-function selectFairPlayers(
+function selectRandomPlayers(
   players: readonly Player[],
-  assignmentCounts: Readonly<Record<string, number>>,
   count: number,
   random: RandomSource,
 ) {
@@ -106,13 +130,9 @@ function selectFairPlayers(
   const selected: Player[] = []
 
   while (selected.length < count) {
-    const minimumTurns = Math.min(...available.map((player) => assignmentCounts[player.id] ?? 0))
-    const leastAssigned = available.filter(
-      (player) => (assignmentCounts[player.id] ?? 0) === minimumTurns,
-    )
-    const chosen = pickRandom(leastAssigned, random)
-    selected.push(chosen)
-    available.splice(available.findIndex((player) => player.id === chosen.id), 1)
+    const chosenIndex = randomIndex(available.length, random)
+    selected.push(available[chosenIndex])
+    available.splice(chosenIndex, 1)
   }
 
   return selected
@@ -122,26 +142,82 @@ function selectWord(
   settings: GameSettings,
   history: AssignmentHistory,
   random: RandomSource,
-): WordEntry {
+): { wordEntry: WordEntry; usedMajorityWordIds: string[] } {
   const usedIds = new Set(history.usedMajorityWordIds)
-  const availableWords = getWordPool(settings.category).filter((entry) => !usedIds.has(entry.id))
+  const wordPool = getWordPool(settings.category)
+  let availableWords = wordPool.filter((entry) => !usedIds.has(entry.id))
+  let retainedHistory = history.usedMajorityWordIds
 
   if (availableWords.length === 0) {
+    const recycledIds = new Set(wordPool.map((entry) => entry.id))
+    retainedHistory = history.usedMajorityWordIds.filter((id) => !recycledIds.has(id))
+    availableWords = [...wordPool]
+  }
+
+  if (availableWords.length === 0) {
+    throw new RoundCreationError('WORD_POOL_EXHAUSTED', 'No majority words are available.')
+  }
+
+  const wordEntry = pickRandom(availableWords, random)
+  return {
+    wordEntry,
+    usedMajorityWordIds: [...retainedHistory, wordEntry.id],
+  }
+}
+
+function selectDecoyWord(
+  mode: GameMode,
+  wordEntry: WordEntry,
+  history: AssignmentHistory,
+  random: RandomSource,
+) {
+  if (mode === 'no-clue') {
+    return {
+      decoyWord: null,
+      usedDecoyWords: history.usedDecoyWords,
+      usedDecoyPairKeys: history.usedDecoyPairKeys,
+    }
+  }
+
+  const candidates = mode === 'close-call' ? wordEntry.relatedDecoys : wordEntry.chaosDecoys
+  const majorityKey = normaliseWord(wordEntry.majority)
+  const validCandidates = [...new Map(
+    candidates
+      .filter((candidate) => normaliseWord(candidate) !== majorityKey)
+      .map((candidate) => [normaliseWord(candidate), candidate]),
+  ).values()]
+
+  if (validCandidates.length === 0) {
     throw new RoundCreationError(
-      'WORD_POOL_EXHAUSTED',
-      `No unused majority words remain in the ${settings.category} pool.`,
+      'INVALID_WORD_ENTRY',
+      `No valid ${mode} decoys are available for ${wordEntry.id}.`,
     )
   }
 
-  return pickRandom(availableWords, random)
-}
+  const usedWords = new Set(history.usedDecoyWords)
+  const pairPrefix = `${mode}:${wordEntry.id}:`
+  const pairKey = (candidate: string) => `${pairPrefix}${normaliseWord(candidate)}`
+  const usedPairs = new Set(history.usedDecoyPairKeys)
+  const unusedWords = validCandidates.filter((candidate) => !usedWords.has(normaliseWord(candidate)))
+  const unusedPairs = validCandidates.filter((candidate) => !usedPairs.has(pairKey(candidate)))
+  const eligibleCandidates = unusedWords.length > 0
+    ? unusedWords
+    : unusedPairs.length > 0
+      ? unusedPairs
+      : validCandidates
+  const decoyWord = pickRandom(eligibleCandidates, random)
+  const decoyKey = normaliseWord(decoyWord)
+  const retainedPairKeys = unusedPairs.length > 0
+    ? history.usedDecoyPairKeys
+    : history.usedDecoyPairKeys.filter((key) => !key.startsWith(pairPrefix))
 
-function getDecoyWord(mode: GameMode, wordEntry: WordEntry) {
-  if (mode === 'no-clue') {
-    return null
+  return {
+    decoyWord,
+    usedDecoyWords: usedWords.has(decoyKey)
+      ? history.usedDecoyWords
+      : [...history.usedDecoyWords, decoyKey],
+    usedDecoyPairKeys: [...retainedPairKeys, pairKey(decoyWord)],
   }
-
-  return mode === 'close-call' ? wordEntry.relatedDecoy : wordEntry.unrelatedDecoy
 }
 
 function getImpostorInstruction(mode: GameMode) {
@@ -210,10 +286,12 @@ export function createRound(
   }
 
   const impostorCount = settings.mode === 'double-trouble' ? 2 : 1
-  const impostors = selectFairPlayers(players, history.impostorTurns, impostorCount, random)
-  const startingPlayer = selectFairPlayers(players, history.startingTurns, 1, random)[0]
-  const wordEntry = selectWord(settings, history, random)
-  const decoyWord = getDecoyWord(settings.mode, wordEntry)
+  const impostors = selectRandomPlayers(players, impostorCount, random)
+  const startingPlayer = pickRandom(players, random)
+  const wordSelection = selectWord(settings, history, random)
+  const wordEntry = wordSelection.wordEntry
+  const decoySelection = selectDecoyWord(settings.mode, wordEntry, history, random)
+  const decoyWord = decoySelection.decoyWord
   const impostorIds = impostors.map((player) => player.id)
   const privateRoles = createPrivateRoles(
     players,
@@ -239,7 +317,9 @@ export function createRound(
       roundsCreated: history.roundsCreated + 1,
       impostorTurns: incrementCounts(history.impostorTurns, impostorIds),
       startingTurns: incrementCounts(history.startingTurns, [startingPlayer.id]),
-      usedMajorityWordIds: [...history.usedMajorityWordIds, wordEntry.id],
+      usedMajorityWordIds: wordSelection.usedMajorityWordIds,
+      usedDecoyWords: decoySelection.usedDecoyWords,
+      usedDecoyPairKeys: decoySelection.usedDecoyPairKeys,
     },
   }
 }

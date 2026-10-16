@@ -10,7 +10,7 @@
 ## Gameplay integrity
 
 - Keep game/business logic independent of React so it can be unit tested.
-- Do not use naive randomness for important choices. Balance impostor frequency while remaining unpredictable. Choose the first clue player independently and keep the two histories separate. Avoid recently used words over time.
+- Use cryptographically secure, unbiased random sampling for important choices. Select impostors independently each round from the full roster; historical counts must not enforce balance or rotation. Choose the first clue player independently from the full roster and keep the two histories separate. Avoid recently used words over time.
 - Question assignments: 1 for 3–5 players, 2 for 6–8, and 3 for 9+; eventually make assignments fair and randomized.
 - Voting is private and pass-the-phone: exactly one deliberately confirmed vote per player, no previous votes or running totals, and hide each choice before passing the phone. Never implement voting as an unguarded click counter.
 - Resolve ties through defence/discussion then a runoff among tied players. If the runoff ties, the impostor escapes. Never resolve a tie by array order.
