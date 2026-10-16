@@ -23,4 +23,4 @@ Decoy selection first prefers candidate words not yet used as decoys in the sess
 
 ## Public clue phase
 
-The shared clue and discussion screen derives one circular speaking order from the saved `startingPlayerId` and the roster's stable IDs. It receives only that public order and the player roster; secret words and roles stay in the private round data. No per-clue interaction or progression state is required while the group talks aloud.
+The shared clue and discussion screen derives one circular speaking order from the saved `startingPlayerId` and the roster's stable IDs. It receives only that public order and the player roster; secret words and roles stay in the private round data. The same shared screen guides the group through verbal clues, questions, discussion, voting and tie defence. No per-player confirmation, assigned question, digital ballot or intermediate phone interaction is required.

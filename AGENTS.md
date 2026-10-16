@@ -3,17 +3,16 @@
 ## Product boundary
 
 - Build a mobile-first, pass-the-phone social deduction game for people playing together in person.
-- The phone manages setup, private role/word reveals, fair assignments, progression, private voting, ties, results, scoring, and local history. Clues, discussion, questions, answers, bluffing, accusations, and defence stay verbal; never ask players to type spoken clues.
+- The phone manages setup, private role/word reveals, fair assignments, progression, the final group accusation, results, scoring, and local history. Only private role reveals require passing the phone. Clues, questions, discussion, voting, bluffing, accusations, and defence stay verbal; never ask players to enter spoken play or individual votes.
 - Locked modes: **Chaos** (unrelated decoy), **Close Call** (related decoy), **No Clue** (no impostor word), and **Double Trouble** (two impostors with the same decoy in V1; only for sufficiently large groups). Do not redefine them.
-- V1 flow: Players → Settings → Private Role Reveal → First Clue Player → Spoken Clues → Open Discussion → Question Round → Final Discussion → Private Voting → Tie Defence/runoff → Accused Player Reveal → Role Reveal → caught impostor's final guess → Results → Next Round.
+- V1 flow: Players → Settings → Private Role Reveal → First Clue Player → Shared verbal clues, questions, discussion and voting → Group Accusation → Accused Player Reveal → Role Reveal → caught impostor's final guess → Results → Next Round.
 
 ## Gameplay integrity
 
 - Keep game/business logic independent of React so it can be unit tested.
 - Use cryptographically secure, unbiased random sampling for important choices. Select impostors independently each round from the full roster; historical counts must not enforce balance or rotation. Choose the first clue player independently from the full roster and keep the two histories separate. Avoid recently used words over time.
-- Question assignments: 1 for 3–5 players, 2 for 6–8, and 3 for 9+; eventually make assignments fair and randomized.
-- Voting is private and pass-the-phone: exactly one deliberately confirmed vote per player, no previous votes or running totals, and hide each choice before passing the phone. Never implement voting as an unguarded click counter.
-- Resolve ties through defence/discussion then a runoff among tied players. If the runoff ties, the impostor escapes. Never resolve a tie by array order.
+- Questions and voting happen verbally on the shared clue screen without assignments, digital ballots or phone handoffs.
+- Resolve verbal ties through defence and another group vote until the players reach one decision. A future Group Accusation screen records only that final selection; never resolve a tie by array order.
 
 ## Checkpoint workflow
 

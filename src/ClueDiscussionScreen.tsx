@@ -59,7 +59,7 @@ function ClueDiscussionScreen({
             Clues &amp; Discussion
           </h1>
           <p className="starting-player"><strong>{startingPlayer.name}</strong> starts!</p>
-          <p className="clue-intro">Follow the order once, then talk it through together.</p>
+          <p className="clue-intro">Give clues in order, then question, discuss and vote together.</p>
 
           <section className="speaking-order" aria-labelledby="speaking-order-title">
             <h2 id="speaking-order-title">Speaking order</h2>
@@ -76,20 +76,24 @@ function ClueDiscussionScreen({
           <div className="group-instructions">
             <section aria-labelledby="give-clues-title">
               <h2 id="give-clues-title">Give your clues</h2>
-              <p>Take turns in this order. Give one clue each without saying your secret word.</p>
+              <p>Each player gives one verbal clue in this order without saying their secret word.</p>
             </section>
             <section aria-labelledby="discuss-title">
-              <h2 id="discuss-title">Then discuss</h2>
-              <p>Talk through the clues, question suspicious answers and work out who&apos;s bluffing.</p>
+              <h2 id="discuss-title">Question &amp; discuss</h2>
+              <p>Ask questions aloud, challenge suspicious clues and work out who&apos;s bluffing.</p>
+            </section>
+            <section aria-labelledby="vote-title">
+              <h2 id="vote-title">Vote together</h2>
+              <p>Vote aloud for the suspected impostor. If tied, hear each defence and vote again until one player is chosen.</p>
             </section>
           </div>
 
           <button
-            className="button button-primary continue-questions-button"
+            className="button button-primary continue-accusation-button"
             type="button"
-            onClick={() => setNextStepNotice('Question Round is coming next.')}
+            onClick={() => setNextStepNotice('Group Accusation is coming next.')}
           >
-            Continue to Questions
+            Continue to Accusation
             <span aria-hidden="true">→</span>
           </button>
           <p className="clue-next-step" role="status" aria-live="polite">
