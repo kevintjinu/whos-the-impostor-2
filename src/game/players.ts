@@ -1,3 +1,5 @@
+import { createUuidV4 } from './uuid'
+
 export const MIN_PLAYERS = 3
 export const MAX_PLAYERS = 12
 export const MAX_PLAYER_NAME_LENGTH = 24
@@ -41,5 +43,5 @@ export function validatePlayerName(
 }
 
 export function createPlayer(name: string): Player {
-  return { id: crypto.randomUUID(), name }
+  return { id: createUuidV4(), name }
 }

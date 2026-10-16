@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react'
+import { useLayoutEffect, useState, type ChangeEvent } from 'react'
 import type {
   Category,
   GameMode,
@@ -14,6 +14,7 @@ type GameConfigurationScreenProps = {
   settings: GameSettings
   notice: string
   onBack: () => void
+  onContinue: () => void
   onSettingsChange: (settings: GameSettings) => void
 }
 
@@ -72,9 +73,14 @@ function GameConfigurationScreen({
   settings,
   notice,
   onBack,
+  onContinue,
   onSettingsChange,
 }: GameConfigurationScreenProps) {
   const [confirmation, setConfirmation] = useState('')
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const updateSetting = <Key extends keyof GameSettings>(key: Key, value: GameSettings[Key]) => {
     onSettingsChange({ ...settings, [key]: value })
@@ -107,7 +113,8 @@ function GameConfigurationScreen({
       return
     }
 
-    setConfirmation('Private role reveal is coming next.')
+    setConfirmation('')
+    onContinue()
   }
 
   return (
