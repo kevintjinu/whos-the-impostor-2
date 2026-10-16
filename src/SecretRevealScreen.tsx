@@ -14,6 +14,8 @@ import './SecretReveal.css'
 type SecretRevealScreenProps = {
   players: readonly Player[]
   round: GameRound
+  initiallyComplete?: boolean
+  onBeginRound: () => void
   onLeave: () => void
 }
 
@@ -52,12 +54,17 @@ function SecretContent({ assignment, controlled, hideButtonRef, onHide }: {
   )
 }
 
-function SecretRevealScreen({ players, round, onLeave }: SecretRevealScreenProps) {
+function SecretRevealScreen({
+  players,
+  round,
+  initiallyComplete = false,
+  onBeginRound,
+  onLeave,
+}: SecretRevealScreenProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [revealMethod, setRevealMethod] = useState<RevealMethod>(null)
   const [hasViewed, setHasViewed] = useState(false)
-  const [isComplete, setIsComplete] = useState(false)
-  const [nextStepNotice, setNextStepNotice] = useState('')
+  const [isComplete, setIsComplete] = useState(initiallyComplete)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const hideButtonRef = useRef<HTMLButtonElement>(null)
   const holdButtonRef = useRef<HTMLButtonElement>(null)
@@ -170,8 +177,6 @@ function SecretRevealScreen({ players, round, onLeave }: SecretRevealScreenProps
     }
 
     setHasViewed(false)
-    setNextStepNotice('')
-
     if (currentIndex === round.privateRoles.length - 1) {
       setIsComplete(true)
       return
@@ -222,14 +227,11 @@ function SecretRevealScreen({ players, round, onLeave }: SecretRevealScreenProps
             <button
               className="button button-primary"
               type="button"
-              onClick={() => setNextStepNotice('The clue round is coming next.')}
+              onClick={onBeginRound}
             >
-              Continue
+              Begin round
               <span aria-hidden="true">→</span>
             </button>
-            <p className="next-step-notice" role="status" aria-live="polite">
-              {nextStepNotice}
-            </p>
           </section>
         ) : (
           <>

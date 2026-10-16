@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react'
+import ClueDiscussionScreen from './ClueDiscussionScreen'
+import { createSpeakingOrder } from './game/cluePhase'
 import type { Player } from './game/players'
 import {
   createAssignmentHistory,
@@ -17,7 +19,12 @@ import HomeScreen from './HomeScreen'
 import SecretRevealScreen from './SecretRevealScreen'
 import './App.css'
 
-type Screen = 'home' | 'player-setup' | 'game-configuration' | 'secret-reveal'
+type Screen =
+  | 'home'
+  | 'player-setup'
+  | 'game-configuration'
+  | 'secret-reveal'
+  | 'clue-discussion'
 
 function App() {
   const [screen, setScreen] = useState<Screen>('home')
@@ -26,6 +33,7 @@ function App() {
   const [configurationNotice, setConfigurationNotice] = useState('')
   const [assignmentHistory, setAssignmentHistory] = useState(createAssignmentHistory)
   const [activeRound, setActiveRound] = useState<GameRound | null>(null)
+  const [hasCompletedReveal, setHasCompletedReveal] = useState(false)
   const roundCreationLockRef = useRef(false)
 
   const handleSettingsChange = (nextSettings: GameSettings) => {
@@ -52,6 +60,7 @@ function App() {
     try {
       const result = createRound(players, settings, assignmentHistory)
       setActiveRound(result.round)
+      setHasCompletedReveal(false)
       setAssignmentHistory(result.history)
       setConfigurationNotice('')
       setScreen('secret-reveal')
@@ -68,12 +77,43 @@ function App() {
 
   const handleLeaveReveal = () => {
     setActiveRound(null)
+    setHasCompletedReveal(false)
     roundCreationLockRef.current = false
     setScreen('game-configuration')
   }
 
+  const handleBeginRound = () => {
+    if (!activeRound) {
+      return
+    }
+
+    setHasCompletedReveal(true)
+    setScreen('clue-discussion')
+  }
+
+  if (screen === 'clue-discussion' && activeRound) {
+    return (
+      <ClueDiscussionScreen
+        players={players}
+        speakingOrder={createSpeakingOrder(
+          players.map((player) => player.id),
+          activeRound.startingPlayerId,
+        )}
+        onBack={() => setScreen('secret-reveal')}
+      />
+    )
+  }
+
   if (screen === 'secret-reveal' && activeRound) {
-    return <SecretRevealScreen players={players} round={activeRound} onLeave={handleLeaveReveal} />
+    return (
+      <SecretRevealScreen
+        initiallyComplete={hasCompletedReveal}
+        players={players}
+        round={activeRound}
+        onBeginRound={handleBeginRound}
+        onLeave={handleLeaveReveal}
+      />
+    )
   }
 
   if (screen === 'game-configuration') {

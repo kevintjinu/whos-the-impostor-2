@@ -13,3 +13,7 @@ The engine keeps role assignment and word selection outside React. `createRound`
 The initial bank contains ten hand-curated entries for each concrete category. Every entry has one majority word, a related Close Call decoy and an unrelated Chaos/Double Trouble decoy. Mixed selects across all concrete categories. Used majority entry IDs are excluded for the session; an exhausted requested pool returns an explicit error instead of repeating a word or changing category.
 
 This is a checkpoint-sized starter dataset, not the final production word library. Relationship quality should receive ongoing editorial review as the library grows.
+
+## Public clue phase
+
+The shared clue and discussion screen derives one circular speaking order from the saved `startingPlayerId` and the roster's stable IDs. It receives only that public order and the player roster; secret words and roles stay in the private round data. No per-clue interaction or progression state is required while the group talks aloud.

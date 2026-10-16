@@ -1,0 +1,163 @@
+.clue-discussion-screen {
+  min-height: 100svh;
+  padding:
+    max(1.25rem, env(safe-area-inset-top))
+    max(1.25rem, env(safe-area-inset-right))
+    max(1.25rem, env(safe-area-inset-bottom))
+    max(1.25rem, env(safe-area-inset-left));
+}
+
+.clue-header,
+.clue-main {
+  width: min(100%, 42rem);
+  margin-inline: auto;
+}
+
+.clue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.clue-main {
+  padding-top: clamp(2.5rem, 7vh, 5rem);
+  padding-bottom: 2rem;
+}
+
+.clue-overview h1,
+.clue-error h1 {
+  margin: 0 0 1rem;
+  color: var(--ink);
+  font-size: clamp(2.65rem, 11vw, 4.5rem);
+  letter-spacing: -0.065em;
+  line-height: 0.95;
+}
+
+.clue-overview h1:focus {
+  outline: none;
+}
+
+.starting-player {
+  margin: 1.5rem 0 0.5rem;
+  color: var(--ink);
+  font-size: clamp(1.6rem, 7vw, 2.5rem);
+  font-weight: 720;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.starting-player strong {
+  color: var(--accent);
+}
+
+.clue-intro,
+.clue-error p {
+  max-width: 31rem;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.speaking-order {
+  margin-top: clamp(2rem, 6vh, 3.5rem);
+}
+
+.speaking-order h2,
+.group-instructions h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.speaking-order ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.625rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.speaking-order li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.speaker-number {
+  display: grid;
+  flex: 0 0 auto;
+  width: 1.75rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.group-instructions {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+
+.group-instructions p {
+  max-width: 34rem;
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.continue-questions-button,
+.clue-error .button {
+  width: min(100%, 24rem);
+  margin-top: 2rem;
+}
+
+.clue-next-step {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.clue-next-step:empty {
+  display: none;
+}
+
+.clue-error {
+  padding-top: clamp(4rem, 15vh, 8rem);
+}
+
+@media (min-width: 48rem) {
+  .clue-discussion-screen {
+    padding: 2rem;
+  }
+
+  .clue-header,
+  .clue-main {
+    width: min(100%, 48rem);
+  }
+
+  .clue-main {
+    padding-top: clamp(3rem, 7vh, 5.5rem);
+  }
+
+  .group-instructions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
