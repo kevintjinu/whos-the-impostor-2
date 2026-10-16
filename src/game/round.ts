@@ -11,6 +11,7 @@ export type AssignmentHistory = {
   roundsCreated: number
   impostorTurns: Record<string, number>
   startingTurns: Record<string, number>
+  previousImpostorIds: string[]
   usedMajorityWordIds: string[]
   usedDecoyWords: string[]
   usedDecoyPairKeys: string[]
@@ -46,6 +47,7 @@ export type RoundCreationErrorCode =
   | 'WORD_POOL_EXHAUSTED'
   | 'INVALID_WORD_ENTRY'
   | 'INVALID_RANDOM_SOURCE'
+  | 'INVALID_HISTORY'
 
 export class RoundCreationError extends Error {
   readonly code: RoundCreationErrorCode
@@ -62,6 +64,7 @@ export function createAssignmentHistory(): AssignmentHistory {
     roundsCreated: 0,
     impostorTurns: {},
     startingTurns: {},
+    previousImpostorIds: [],
     usedMajorityWordIds: [],
     usedDecoyWords: [],
     usedDecoyPairKeys: [],
@@ -286,7 +289,12 @@ export function createRound(
   }
 
   const impostorCount = settings.mode === 'double-trouble' ? 2 : 1
-  const impostors = selectRandomPlayers(players, impostorCount, random)
+  const previousImpostors = new Set(history.previousImpostorIds)
+  const eligibleImpostors = players.filter((player) => !previousImpostors.has(player.id))
+  if (eligibleImpostors.length < impostorCount) {
+    throw new RoundCreationError('INVALID_HISTORY', 'Not enough eligible players remain after the previous impostors are excluded.')
+  }
+  const impostors = selectRandomPlayers(eligibleImpostors, impostorCount, random)
   const startingPlayer = pickRandom(players, random)
   const wordSelection = selectWord(settings, history, random)
   const wordEntry = wordSelection.wordEntry
@@ -317,6 +325,7 @@ export function createRound(
       roundsCreated: history.roundsCreated + 1,
       impostorTurns: incrementCounts(history.impostorTurns, impostorIds),
       startingTurns: incrementCounts(history.startingTurns, [startingPlayer.id]),
+      previousImpostorIds: [...impostorIds],
       usedMajorityWordIds: wordSelection.usedMajorityWordIds,
       usedDecoyWords: decoySelection.usedDecoyWords,
       usedDecoyPairKeys: decoySelection.usedDecoyPairKeys,

@@ -64,9 +64,9 @@ function HomeScreen({ onStartGame }: HomeScreenProps) {
           <h2 id="rules-title">How to play</h2>
         </div>
         <ol>
-          <li>Everyone gets a secret word — except the impostor.</li>
-          <li>Take turns giving a clue without giving the word away.</li>
-          <li>Talk it out, then find the person who does not belong.</li>
+          <li>Read your role privately. Most players share a word; impostors get a decoy or no word.</li>
+          <li>Give clues in order, then question, discuss and vote aloud.</li>
+          <li>Lock the group&apos;s accusation. Caught impostors get one final spoken word guess before the answers appear.</li>
         </ol>
         <form method="dialog">
           <button className="button button-secondary dialog-close" type="submit">

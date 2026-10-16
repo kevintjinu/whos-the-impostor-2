@@ -139,16 +139,67 @@ describe('round creation', () => {
     expect(second.round.impostorIds).toEqual(['player-8'])
   })
 
-  it('allows the same player in consecutive rounds without enforcing rotation', () => {
-    const first = createRound(players.slice(0, 3), settings(), createAssignmentHistory(), () => 2)
-    const second = createRound(players.slice(0, 3), settings(), first.history, () => 2)
-    const third = createRound(players.slice(0, 3), settings(), second.history, () => 2)
+  it.each(['chaos', 'close-call', 'no-clue'] as const)('excludes only the immediately previous impostor in %s', (mode) => {
+    const group = players.slice(0, 3)
+    const first = createRound(group, settings({ mode }), createAssignmentHistory(), () => 0)
+    const second = createRound(group, settings({ mode }), first.history, () => 0)
+    const alternativeSecond = createRound(group, settings({ mode }), first.history, sequenceRandom([1, 0, 0]))
+    const third = createRound(group, settings({ mode }), second.history, () => 0)
 
-    expect([first.round, second.round, third.round].map((round) => round.impostorIds)).toEqual([
-      ['player-3'], ['player-3'], ['player-3'],
-    ])
-    expect(third.history.impostorTurns['player-3']).toBe(3)
-    expect(third.history.usedMajorityWordIds).toHaveLength(3)
+    expect([first.round, second.round, third.round].map((round) => round.impostorIds))
+      .toEqual([['player-1'], ['player-2'], ['player-1']])
+    expect(alternativeSecond.round.impostorIds).toEqual(['player-3'])
+    expect(third.history.previousImpostorIds).toEqual(['player-1'])
+    expect(third.history.impostorTurns['player-1']).toBe(2)
+  })
+
+  it('gives each eligible single-impostor candidate equal deterministic selection paths', () => {
+    const group = players.slice(0, 4)
+    const history = { ...createAssignmentHistory(), previousImpostorIds: ['player-2'], impostorTurns: { 'player-4': 100 } }
+    const eligibleIds = ['player-1', 'player-3', 'player-4']
+    for (let draw = 0; draw < 3; draw++) {
+      const result = createRound(group, settings(), history, sequenceRandom([draw, 1, 0]))
+      expect(result.round.impostorIds).toEqual([eligibleIds[draw]])
+      // The excluded impostor can still independently start the clues.
+      expect(result.round.startingPlayerId).toBe('player-2')
+    }
+  })
+
+  it('selects all remaining Double Trouble pairs uniformly after excluding both previous impostors', () => {
+    const group = players.slice(0, 6)
+    const history = { ...createAssignmentHistory(), previousImpostorIds: ['player-1', 'player-2'] }
+    const eligible = group.slice(2)
+    const pairCounts = new Map<string, number>()
+    for (let first = 0; first < 4; first++) {
+      for (let second = 0; second < 3; second++) {
+        const result = createRound(group, settings({ mode: 'double-trouble' }), history, sequenceRandom([first, second, 0, 0, 0]))
+        const remaining = eligible.filter((_, index) => index !== first)
+        expect(result.round.impostorIds).toEqual([eligible[first].id, remaining[second].id])
+        const key = [...result.round.impostorIds].sort().join(',')
+        pairCounts.set(key, (pairCounts.get(key) ?? 0) + 1)
+        expect(result.round.startingPlayerId).toBe('player-1')
+      }
+    }
+    expect(pairCounts.size).toBe(6)
+    expect([...pairCounts.values()]).toEqual(Array(6).fill(2))
+  })
+
+  it.each([3, 4, 5, 6, 7, 8, 9, 10, 11, 12])('never repeats immediately across multiple %i-player rounds', (count) => {
+    const group = Array.from({ length: count }, (_, index) => ({ id: `p${index}`, name: `Player ${index}` }))
+    for (const mode of (count >= 6 ? ['chaos', 'double-trouble'] : ['chaos']) as Array<'chaos' | 'double-trouble'>) {
+      let history = createAssignmentHistory()
+      for (let round = 0; round < 20; round++) {
+        const result = createRound(group, settings({ mode }), history, sequenceRandom([round, 1, 2, 3, 4]))
+        expect(result.round.impostorIds.some((id) => history.previousImpostorIds.includes(id))).toBe(false)
+        history = result.history
+      }
+    }
+  })
+
+  it('fails explicitly when malformed exclusion history leaves too few eligible players', () => {
+    expect(() => createRound(players.slice(0, 3), settings(), {
+      ...createAssignmentHistory(), previousImpostorIds: players.slice(0, 3).map(({ id }) => id),
+    }, () => 0)).toThrowError(expect.objectContaining({ code: 'INVALID_HISTORY' }))
   })
 
   it.each([6, 7, 8, 9, 10, 11, 12])(

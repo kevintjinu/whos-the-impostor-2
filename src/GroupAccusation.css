@@ -1,0 +1,330 @@
+.group-accusation-screen {
+  min-height: 100svh;
+  padding:
+    max(1.25rem, env(safe-area-inset-top))
+    max(1.25rem, env(safe-area-inset-right))
+    max(1.25rem, env(safe-area-inset-bottom))
+    max(1.25rem, env(safe-area-inset-left));
+}
+
+.accusation-header,
+.accusation-main {
+  width: min(100%, 42rem);
+  margin-inline: auto;
+}
+
+.accusation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.accusation-header-locked {
+  justify-content: flex-end;
+}
+
+.accusation-main {
+  padding-top: clamp(2.5rem, 7vh, 5rem);
+  padding-bottom: 2rem;
+}
+
+.accusation-main h1 {
+  max-width: 9em;
+  margin: 0 0 1rem;
+  color: var(--ink);
+  font-size: clamp(2.65rem, 11vw, 4.5rem);
+  letter-spacing: -0.065em;
+  line-height: 0.95;
+}
+
+.accusation-main h1:focus {
+  outline: none;
+}
+
+.accusation-intro {
+  max-width: 32rem;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.accusation-form {
+  margin-top: clamp(2rem, 6vh, 3.5rem);
+}
+
+.accusation-form fieldset {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.accusation-form legend,
+.locked-selection h2,
+.final-guess h2,
+.leaderboard h2 {
+  padding: 0;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.selection-progress {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.accusation-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 0.625rem;
+  margin-top: 1rem;
+}
+
+.accusation-option {
+  display: flex;
+  min-width: 0;
+  min-height: 3.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  padding: 0.75rem;
+  color: var(--ink);
+  background: var(--surface);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.accusation-option:hover {
+  border-color: var(--ink);
+}
+
+.accusation-option.is-selected {
+  border-color: var(--accent);
+  background: #fbf0ec;
+}
+
+.accusation-option:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.accusation-option input {
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.accusation-option span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.confirm-accusation-button {
+  width: min(100%, 24rem);
+  margin-top: 2rem;
+}
+
+.confirm-accusation-button:disabled {
+  cursor: not-allowed;
+  background: #c9c5bd;
+  color: #66645f;
+}
+
+.accusation-error-message {
+  margin: 0.75rem 0 0;
+  color: var(--accent-hover);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.locked-selection {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.locked-selection h2 {
+  margin: 0;
+}
+
+.guess-actions,
+.result-actions {
+  display: grid;
+  gap: 0.75rem;
+  width: min(100%, 32rem);
+  margin-top: 1.5rem;
+}
+
+.locked-selection ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.locked-selection li {
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.reveal-warning {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  max-width: 32rem;
+}
+
+.final-guess,
+.leaderboard,
+.round-answers,
+.result-details,
+.session-history {
+  margin-top: 2rem;
+}
+
+.final-guess > p {
+  max-width: 32rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.round-answers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.round-answers dt,
+.result-details dt {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.round-answers dd {
+  margin: 0.4rem 0 0;
+  color: var(--ink);
+  font-size: clamp(1.75rem, 7vw, 2.5rem);
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.result-details {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.result-details > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 1rem;
+}
+
+.result-details dd {
+  margin: 0;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.leaderboard ol,
+.session-history ol {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.leaderboard li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding-block: 0.8rem;
+  border-bottom: 1px solid var(--line);
+  font-weight: 700;
+}
+
+.score-rank,
+.score-unit {
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.score-name {
+  overflow-wrap: anywhere;
+}
+
+.session-history summary {
+  min-height: 2.75rem;
+  padding-block: 0.75rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.session-history summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.session-history li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: space-between;
+  padding-block: 0.75rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 24rem) {
+  .accusation-header {
+    align-items: flex-start;
+  }
+
+  .accusation-header .brand {
+    min-width: 0;
+    justify-content: flex-end;
+    text-align: right;
+    white-space: normal;
+  }
+}
+
+@media (min-width: 48rem) {
+  .group-accusation-screen {
+    padding: 2rem;
+  }
+
+  .accusation-header,
+  .accusation-main {
+    width: min(100%, 48rem);
+  }
+
+  .accusation-main {
+    padding-top: clamp(3rem, 7vh, 5.5rem);
+  }
+
+  .guess-actions,
+  .result-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

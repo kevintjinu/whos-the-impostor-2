@@ -15,6 +15,7 @@ function renderScreen() {
       players={players}
       speakingOrder={['chloe', 'alex', 'ben']}
       onBack={() => undefined}
+      onContinue={() => undefined}
     />,
   )
 }

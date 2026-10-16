@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import type { Player } from './game/players'
 import './ClueDiscussion.css'
 
@@ -6,14 +6,15 @@ type ClueDiscussionScreenProps = {
   players: readonly Player[]
   speakingOrder: readonly string[]
   onBack: () => void
+  onContinue: () => void
 }
 
 function ClueDiscussionScreen({
   players,
   speakingOrder,
   onBack,
+  onContinue,
 }: ClueDiscussionScreenProps) {
-  const [nextStepNotice, setNextStepNotice] = useState('')
   const headingRef = useRef<HTMLHeadingElement>(null)
   const orderedPlayers = speakingOrder.map((playerId) =>
     players.find((player) => player.id === playerId),
@@ -84,21 +85,18 @@ function ClueDiscussionScreen({
             </section>
             <section aria-labelledby="vote-title">
               <h2 id="vote-title">Vote together</h2>
-              <p>Vote aloud for the suspected impostor. If tied, hear each defence and vote again until one player is chosen.</p>
+              <p>Vote aloud for the suspected impostor, or two in Double Trouble. If tied, hear each defence and revote until the group agrees.</p>
             </section>
           </div>
 
           <button
             className="button button-primary continue-accusation-button"
             type="button"
-            onClick={() => setNextStepNotice('Group Accusation is coming next.')}
+            onClick={onContinue}
           >
             Continue to Accusation
             <span aria-hidden="true">→</span>
           </button>
-          <p className="clue-next-step" role="status" aria-live="polite">
-            {nextStepNotice}
-          </p>
         </section>
       </main>
     </div>

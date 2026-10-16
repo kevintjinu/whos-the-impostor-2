@@ -45,6 +45,7 @@
   font-weight: 720;
   letter-spacing: -0.045em;
   line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .starting-player strong {
@@ -126,16 +127,6 @@
 .clue-error .button {
   width: min(100%, 24rem);
   margin-top: 2rem;
-}
-
-.clue-next-step {
-  margin: 0.75rem 0 0;
-  color: var(--muted);
-  font-size: 0.875rem;
-}
-
-.clue-next-step:empty {
-  display: none;
 }
 
 .clue-error {

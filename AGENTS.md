@@ -5,14 +5,14 @@
 - Build a mobile-first, pass-the-phone social deduction game for people playing together in person.
 - The phone manages setup, private role/word reveals, fair assignments, progression, the final group accusation, results, scoring, and local history. Only private role reveals require passing the phone. Clues, questions, discussion, voting, bluffing, accusations, and defence stay verbal; never ask players to enter spoken play or individual votes.
 - Locked modes: **Chaos** (unrelated decoy), **Close Call** (related decoy), **No Clue** (no impostor word), and **Double Trouble** (two impostors with the same decoy in V1; only for sufficiently large groups). Do not redefine them.
-- V1 flow: Players → Settings → Private Role Reveal → First Clue Player → Shared verbal clues, questions, discussion and voting → Group Accusation → Accused Player Reveal → Role Reveal → caught impostor's final guess → Results → Next Round.
+- V1 flow: Players → Settings → Private Role Reveal → First Clue Player → Shared verbal clues, questions, discussion and voting → Group Accusation with immediate identity reveal → one final verbal guess if the accusation is completely correct → Results in the same view → Next Round. Avoid extra confirmations, reveal steps or separate results pages.
 
 ## Gameplay integrity
 
 - Keep game/business logic independent of React so it can be unit tested.
-- Use cryptographically secure, unbiased random sampling for important choices. Select impostors independently each round from the full roster; historical counts must not enforce balance or rotation. Choose the first clue player independently from the full roster and keep the two histories separate. Avoid recently used words over time.
+- Use cryptographically secure, unbiased random sampling for important choices. Exclude the immediately previous round's impostor(s), then select uniformly from the remaining roster without count balancing or fixed rotation. This deliberate no-consecutive rule is not independent sampling across all players. Reset exclusion history for a new session. Choose the first clue player independently from the full roster. Avoid recently used words over time.
 - Questions and voting happen verbally on the shared clue screen without assignments, digital ballots or phone handoffs.
-- Resolve verbal ties through defence and another group vote until the players reach one decision. A future Group Accusation screen records only that final selection; never resolve a tie by array order.
+- Resolve verbal ties through defence and another group vote until the players reach one decision. The Group Accusation screen records only that final selection; never resolve a tie by array order.
 
 ## Checkpoint workflow
 

@@ -70,6 +70,7 @@ function SecretRevealScreen({
   const holdButtonRef = useRef<HTMLButtonElement>(null)
   const controlledRevealButtonRef = useRef<HTMLButtonElement>(null)
   const activePointerIdRef = useRef<number | null>(null)
+  const handoffReadyRef = useRef(false)
 
   const assignment = round.privateRoles[currentIndex]
   const player = players.find((candidate) => candidate.id === assignment?.playerId)
@@ -121,6 +122,7 @@ function SecretRevealScreen({
   const showSecret = (method: Exclude<RevealMethod, null>) => {
     setRevealMethod(method)
     setHasViewed(true)
+    handoffReadyRef.current = true
   }
 
   const hideSecret = () => {
@@ -172,10 +174,11 @@ function SecretRevealScreen({
   }
 
   const handleNextPlayer = () => {
-    if (!hasViewed || isSecretVisible) {
+    if (!hasViewed || isSecretVisible || !handoffReadyRef.current) {
       return
     }
 
+    handoffReadyRef.current = false
     setHasViewed(false)
     if (currentIndex === round.privateRoles.length - 1) {
       setIsComplete(true)
